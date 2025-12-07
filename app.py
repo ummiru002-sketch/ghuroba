@@ -8,15 +8,15 @@ from models import db, User, Semester, WeeklySlot, Project, Announcement, Transa
 from translations import TRANSLATIONS
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'dev-key-ghuroba-3.5' # Change in production
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///ghuroba.db'
+app.config['SECRET_KEY'] = os.environ.get("SECRET_KEY")
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
-if not os.path.exists(app.config['UPLOAD_FOLDER']):
-    os.makedirs(app.config['UPLOAD_FOLDER'])
 
 db.init_app(app)
+with app.app_context():
+    db.create_all()
 login_manager = LoginManager()
 login_manager.login_view = 'login'
 login_manager.init_app(app)
