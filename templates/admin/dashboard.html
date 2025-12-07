@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-primary-custom">{{ t['dashboard'] }}</h2>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card card-custom bg-light border-primary">
+            <div class="card-body text-center">
+                <h4 class="card-title text-primary-custom">{{ t['grand_total'] }}</h4>
+                <h1 class="display-3 fw-bold text-success">{{ "%.2f"|format(balance) }}</h1>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="card card-custom bg-light border-warning h-100">
+             <div class="card-body text-center d-flex flex-column justify-content-center">
+                <h4 class="card-title text-warning">{{ t['pending_dues'] }}</h4>
+                <h2 class="display-4 fw-bold">{{ pending_count }}</h2>
+                <a href="{{ url_for('admin_approvals') }}" class="btn btn-warning mt-2">{{ t['actions'] }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ t['manage_semesters'] }}</h5>
+                <p class="card-text">Create, Open, or Close semesters.</p>
+                <a href="{{ url_for('admin_semesters') }}" class="btn btn-outline-primary w-100">{{ t['actions'] }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ t['projects'] }}</h5>
+                <p class="card-text">Manage projects status (Active/Completed).</p>
+                <a href="{{ url_for('admin_projects') }}" class="btn btn-outline-primary w-100">{{ t['actions'] }}</a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card h-100">
+            <div class="card-body">
+                <h5 class="card-title">{{ t['treasury'] }}</h5>
+                <p class="card-text">Record income and expenses.</p>
+                <a href="{{ url_for('admin_treasury') }}" class="btn btn-outline-primary w-100">{{ t['actions'] }}</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

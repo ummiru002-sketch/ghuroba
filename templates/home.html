@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="text-center py-5">
+    <img src="{{ url_for('static', filename='logo.png') }}" alt="Logo" height="100" class="mb-3">
+    <h1 class="display-4 text-primary-custom fw-bold">{{ t['welcome'] }}</h1>
+    <p class="lead text-muted">{{ t['welcome_sub'] }}</p>
+    {% if not current_user.is_authenticated %}
+        <div class="mt-4">
+            <a href="{{ url_for('register') }}" class="btn btn-primary-custom btn-lg me-2">{{ t['join_us'] }}</a>
+            <a href="#news" class="btn btn-outline-secondary btn-lg">{{ t['learn_more'] }}</a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Calendar Widget -->
+<div id="calendar" class="my-5">
+    <h2 class="text-primary-custom mb-4 border-bottom pb-2">{{ t['calendar'] }}</h2>
+    <div class="row">
+        <div class="col-md-8">
+            <div id='calendar-widget'></div>
+        </div>
+        <div class="col-md-4">
+             <div class="card card-custom p-3">
+                 <h5 class="text-primary-custom">{{ t['upcoming_events'] }}</h5>
+                 <ul class="list-group list-group-flush">
+                     {% for event in events[:5] %}
+                        <li class="list-group-item">
+                            <strong>{{ event.title }}</strong><br>
+                            <small class="text-muted">{{ event.start_date.strftime('%d %b %H:%M') }}</small>
+                            {% if event.location %}<br><small class="text-info"><i class="bi bi-geo-alt"></i> {{ event.location }}</small>{% endif %}
+                        </li>
+                     {% else %}
+                        <li class="list-group-item text-muted">No upcoming events.</li>
+                     {% endfor %}
+                 </ul>
+             </div>
+        </div>
+    </div>
+</div>
+
+<div id="news" class="my-5">
+    <h2 class="text-primary-custom mb-4 border-bottom pb-2">{{ t['news'] }}</h2>
+    
+    {% if announcements %}
+        <div class="row">
+            {% for news in announcements %}
+                <div class="col-md-4 mb-4">
+                    <div class="card card-custom h-100">
+                        {% if news.image_filename %}
+                            <img src="{{ url_for('static', filename='uploads/' + news.image_filename) }}" class="card-img-top" alt="{{ news.title }}" style="height: 200px; object-fit: cover;">
+                        {% else %}
+                             <div class="bg-light text-center py-5" style="height: 200px;">
+                                <span class="text-muted">{{ t['image'] }}</span>
+                             </div>
+                        {% endif %}
+                        <div class="card-body">
+                            <h5 class="card-title fw-bold">{{ news.title }}</h5>
+                            <p class="card-text text-muted small">{{ news.created_at.strftime('%Y-%m-%d') }}</p>
+                            <p class="card-text">{{ news.content[:100] }}...</p>
+                            <button class="btn btn-sm btn-outline-success" data-bs-toggle="modal" data-bs-target="#newsModal{{ news.id }}">{{ t['read_more'] }}</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Modal -->
+                <div class="modal fade" id="newsModal{{ news.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ news.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                {% if news.image_filename %}
+                                    <img src="{{ url_for('static', filename='uploads/' + news.image_filename) }}" class="img-fluid mb-3 rounded">
+                                {% endif %}
+                                <p style="white-space: pre-line;">{{ news.content }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">No news yet.</p>
+    {% endif %}
+</div>
+<link href='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css' rel='stylesheet' />
+<script src='https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js'></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        var calendarEl = document.getElementById('calendar-widget');
+        var calendar = new FullCalendar.Calendar(calendarEl, {
+            initialView: 'dayGridMonth',
+            height: 400,
+            events: '/api/events',
+            headerToolbar: {
+                left: 'prev,next today',
+                center: 'title',
+                right: 'dayGridMonth,listWeek'
+            }
+        });
+        calendar.render();
+    });
+</script>
+{% endblock %}

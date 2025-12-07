@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-primary-custom">{{ t['members'] }}</h2>
+
+<div class="table-responsive">
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>{{ t['username'] }}</th>
+                <th>{{ t['real_name'] }}</th>
+                <th>{{ t['department'] }}</th>
+                <th>{{ t['actions'] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for member in members %}
+                <tr>
+                    <td>{{ member.username }}</td>
+                    <td>{{ member.real_name }}</td>
+                    <td>{{ member.department }}</td>
+                    <td>
+                        <form method="POST" class="d-inline" onsubmit="return confirm('{{ t['confirm_delete'] }}')">
+                            <input type="hidden" name="user_id" value="{{ member.id }}">
+                            <button type="submit" name="action" value="reset" class="btn btn-sm btn-warning mb-1">{{ t['reset_password'] }}</button>
+                            <button type="submit" name="action" value="delete" class="btn btn-sm btn-danger mb-1">{{ t['delete'] }}</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <h2 class="mb-4 text-primary-custom text-center">{{ t['profile'] }}</h2>
+        <div class="card card-custom p-4">
+            <form method="POST">
+                <div class="mb-3">
+                    <label class="form-label">{{ t['username'] }}</label>
+                    <input type="text" class="form-control" value="{{ current_user.username }}" disabled>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ t['department'] }}</label>
+                    <input type="text" class="form-control" value="{{ current_user.department }}" disabled>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ t['real_name'] }}</label>
+                    <input type="text" name="real_name" class="form-control" value="{{ current_user.real_name }}" required>
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">{{ t['password'] }} (Leave blank to keep current)</label>
+                    <input type="password" name="password" class="form-control">
+                </div>
+                <button type="submit" class="btn btn-primary-custom w-100">{{ t['save'] }}</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

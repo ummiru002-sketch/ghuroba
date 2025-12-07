@@ -1,0 +1,53 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-primary-custom">{{ t['tracker'] }}</h2>
+
+{% if not semester %}
+    <div class="alert alert-warning">{{ t['semester_closed_msg'] }}</div>
+{% else %}
+    <div class="card card-custom p-3">
+        <h5>{{ semester.name }} ({{ semester.start_date.strftime('%Y-%m-%d') }} - {{ semester.end_date.strftime('%Y-%m-%d') }})</h5>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th class="text-start sticky-start" style="position: sticky; left: 0; background: #fff; z-index: 2;">{{ t['members'] }}</th>
+                        {% for slot in slots %}
+                            <th>{{ t['week'] }} {{ slot.week_number }}<br><small class="text-muted" style="font-size: 0.7em;">{{ slot.start_date.strftime('%d/%m') }}</small></th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in tracker_data %}
+                        <tr>
+                            <td class="text-start text-nowrap" style="position: sticky; left: 0; background: #fff;">{{ row.user.real_name }}</td>
+                            {% for slot in slots %}
+                                {% set status = row.status_map.get(slot.id) %}
+                                <td>
+                                    {% if status == 'approved' %}
+                                        <span class="badge bg-success" title="{{ t['paid'] }}">P</span>
+                                    {% elif status == 'pending' %}
+                                        <span class="badge bg-warning text-dark" title="{{ t['pending'] }}">?</span>
+                                    {% else %}
+                                        <span class="badge bg-light text-secondary border">-</span>
+                                    {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endif %}
+
+<style>
+    /* Custom scrollbar for large tables */
+    .table-responsive {
+        max-height: 70vh;
+        overflow-y: auto;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-primary-custom">{{ t['news'] }}</h2>
+
+<div class="card card-custom mb-4">
+    <div class="card-header bg-white fw-bold">{{ t['add_news'] }}</div>
+    <div class="card-body">
+        <form method="POST" enctype="multipart/form-data">
+            <div class="mb-3">
+                <label class="form-label">{{ t['title'] }}</label>
+                <input type="text" name="title" class="form-control" required>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{{ t['content'] }}</label>
+                <textarea name="content" class="form-control" rows="5" required></textarea>
+            </div>
+            <div class="mb-3">
+                <label class="form-label">{{ t['image'] }}</label>
+                <input type="file" name="image" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary-custom">{{ t['save'] }}</button>
+        </form>
+    </div>
+</div>
+
+<div class="list-group">
+    {% for news in news_items %}
+        <div class="list-group-item">
+            <div class="d-flex w-100 justify-content-between">
+                <h5 class="mb-1">{{ news.title }}</h5>
+                <small>{{ news.created_at.strftime('%Y-%m-%d') }}</small>
+            </div>
+            <p class="mb-1 text-muted">{{ news.content[:100] }}...</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}

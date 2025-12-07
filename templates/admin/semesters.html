@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2 class="mb-4 text-primary-custom">{{ t['manage_semesters'] }}</h2>
+
+<div class="card card-custom mb-4">
+    <div class="card-header bg-white fw-bold">{{ t['actions'] }}</div>
+    <div class="card-body">
+        <form method="POST" class="row g-3">
+            <input type="hidden" name="create" value="1">
+            <div class="col-md-4">
+                <label class="form-label">{{ t['semester_name'] }}</label>
+                <input type="text" name="name" class="form-control" placeholder="e.g. 1/2023" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ t['start_date'] }}</label>
+                <input type="date" name="start_date" class="form-control" required>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label">{{ t['end_date'] }}</label>
+                <input type="date" name="end_date" class="form-control" required>
+            </div>
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary-custom w-100">{{ t['generate_slots'] }}</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-hover align-middle">
+        <thead>
+            <tr>
+                <th>{{ t['semester_name'] }}</th>
+                <th>{{ t['start_date'] }}</th>
+                <th>{{ t['end_date'] }}</th>
+                <th>{{ t['status'] }}</th>
+                <th>{{ t['actions'] }}</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sem in semesters %}
+                <tr class="{{ 'table-success' if sem.is_active else 'table-secondary' }}">
+                    <td>{{ sem.name }}</td>
+                    <td>{{ sem.start_date }}</td>
+                    <td>{{ sem.end_date }}</td>
+                    <td>
+                        {% if sem.is_active %}
+                            <span class="badge bg-success">Active (Open)</span>
+                        {% else %}
+                            <span class="badge bg-secondary">Closed</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="POST" class="d-inline">
+                            <input type="hidden" name="toggle_status" value="1">
+                            <input type="hidden" name="sem_id" value="{{ sem.id }}">
+                            {% if sem.is_active %}
+                                <button type="submit" class="btn btn-sm btn-outline-danger">{{ t['close_semester'] }}</button>
+                            {% else %}
+                                <button type="submit" class="btn btn-sm btn-outline-success">{{ t['open_semester'] }}</button>
+                            {% endif %}
+                        </form>
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#editSemModal{{ sem.id }}">{{ t['edit_semester'] }}</button>
+                        <form method="POST" action="{{ url_for('delete_semester') }}" class="d-inline" onsubmit="return confirm('{{ t['confirm_delete_semester'] }}')">
+                             <input type="hidden" name="sem_id" value="{{ sem.id }}">
+                             <button type="submit" class="btn btn-sm btn-danger">{{ t['delete'] }}</button>
+                        </form>
+
+                        <!-- Edit Modal -->
+                        <div class="modal fade" id="editSemModal{{ sem.id }}" tabindex="-1">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <form method="POST" action="{{ url_for('edit_semester') }}">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title">{{ t['edit_semester'] }}</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <input type="hidden" name="sem_id" value="{{ sem.id }}">
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ t['semester_name'] }}</label>
+                                                <input type="text" name="name" class="form-control" value="{{ sem.name }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ t['start_date'] }}</label>
+                                                <input type="date" name="start_date" class="form-control" value="{{ sem.start_date }}" required>
+                                            </div>
+                                            <div class="mb-3">
+                                                <label class="form-label">{{ t['end_date'] }}</label>
+                                                <input type="date" name="end_date" class="form-control" value="{{ sem.end_date }}" required>
+                                            </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">{{ t['cancel'] }}</button>
+                                            <button type="submit" class="btn btn-primary">{{ t['update'] }}</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
