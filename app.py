@@ -13,9 +13,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get("DATABASE_URL")
 app.config['UPLOAD_FOLDER'] = os.path.join('static', 'uploads')
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 
-
 db.init_app(app)
-with app.app_context():
    
 login_manager = LoginManager()
 login_manager.login_view = 'login'
