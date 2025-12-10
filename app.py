@@ -207,18 +207,34 @@ def admin_dashboard():
 @app.route('/admin/approvals', methods=['GET', 'POST'])
 @login_required
 def admin_approvals():
-    if current_user.role != 'admin': return redirect(url_for('home'))
+    if current_user.role != 'admin': 
+        return redirect(url_for('home'))
     
     if request.method == 'POST':
         txn_id = request.form.get('txn_id')
+        action = request.form.get('action')   # ✔ ใช้ action เพื่อแยก approve / reject
         txn = Transaction.query.get(txn_id)
+
         if txn:
-            txn.status = 'approved'
+            if action == 'approve':
+                txn.status = 'approved'
+                flash('Payment Approved')
+
+            elif action == 'reject':  # ✔ เพิ่มฟังก์ชันปฏิเสธสลิป
+                txn.status = 'rejected'
+                flash('Payment Rejected')
+
             db.session.commit()
-            flash('Payment Approved')
-    
-    pending_txns = Transaction.query.filter_by(status='pending', type='income_dues').order_by(Transaction.date.asc()).all()
-    return render_template('admin/approvals.html', transactions=pending_txns)
+
+    pending_txns = Transaction.query.filter_by(
+        type='income_dues'
+    ).filter(Transaction.status.in_( ['pending', 'rejected'] )).order_by(Transaction.date.asc()).all()
+
+    return render_template(
+        'admin/approvals.html',
+        transactions=pending_txns
+    )
+
 
 @app.route('/admin/semesters', methods=['GET', 'POST'])
 @login_required
